@@ -1,0 +1,68 @@
+{% extends "admin/base.html" %}
+{% block title %}Admin overview{% endblock %}
+
+{% block content %}
+<div class="card">
+  <h1>{{ admin.name }}</h1>
+  <p class="muted">
+    The administrator configures the things the anti-proxy layers depend on.
+    If a classroom has no coordinates or no registered network, attendance
+    there cannot succeed at all &mdash; those failures are surfaced below.
+  </p>
+</div>
+
+<div id="alerts"></div>
+
+<div class="card">
+  <h2>At a glance</h2>
+  <div id="stats" class="stat-grid"><p class="muted">Loading&hellip;</p></div>
+</div>
+
+<div class="card">
+  <h2>What only an administrator can do</h2>
+  <ul class="duty-list">
+    <li>
+      <strong>Survey the classrooms.</strong> Latitude, longitude and the
+      10 m radius. At this radius a coordinate typed off a map instead of
+      measured in the room rejects the whole class.
+      <a href="{{ url_for('pages.admin_locations') }}">Classrooms &rarr;</a>
+    </li>
+    <li>
+      <strong>Register the classroom networks.</strong> The egress IP that
+      separates a student in the room from one at home. No other role can
+      set this, and a location without one fails closed.
+      <a href="{{ url_for('pages.admin_locations') }}">Classrooms &rarr;</a>
+    </li>
+    <li>
+      <strong>Hold the device register.</strong> Revoke a binding when a
+      student changes phone or leaves.
+      <a href="{{ url_for('pages.admin_devices') }}">Devices &rarr;</a>
+    </li>
+    <li>
+      <strong>Review refused attempts across all classes.</strong> A teacher
+      sees only their own session; patterns spanning subjects are visible
+      only here.
+      <a href="{{ url_for('pages.admin_attempts') }}">Attempts &rarr;</a>
+    </li>
+    <li>
+      <strong>Own the accounts and the timetable.</strong> Students,
+      teachers, departments, classes and subjects.
+      <a href="{{ url_for('pages.admin_students') }}">Students &rarr;</a>
+    </li>
+    <li>
+      <strong>Report and export.</strong> Daily and per-student attendance,
+      with CSV export.
+      <a href="{{ url_for('pages.admin_reports') }}">Reports &rarr;</a>
+    </li>
+  </ul>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const STATS_URL = '{{ url_for("admin.stats") }}';
+const LOCATIONS_PAGE = '{{ url_for("pages.admin_locations") }}';
+const ATTEMPTS_PAGE = '{{ url_for("pages.admin_attempts") }}';
+</script>
+<script src="{{ url_for('static', filename='js/admin_dashboard.js') }}"></script>
+{% endblock %}

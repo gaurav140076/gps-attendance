@@ -1,0 +1,19 @@
+Flask>=3.0
+Flask-SQLAlchemy>=3.1
+SQLAlchemy>=2.0
+Werkzeug>=3.0
+python-dotenv>=1.0
+
+# QR code rendering for the teacher's screen.
+# Optional: if this is not installed the teacher panel falls back to the
+# short manual code, and the system still works end to end.
+qrcode[pil]>=7.4
+
+# --- Deployment ---
+# gunicorn installs on Windows but cannot run there; it is used only on
+# the Linux host. Keep running app.py locally.
+gunicorn>=22.0
+
+# psycopg 3. config.py rewrites the provider's DATABASE_URL to
+# postgresql+psycopg:// so this driver is the one actually used.
+psycopg[binary]>=3.1

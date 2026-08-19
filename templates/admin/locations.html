@@ -1,0 +1,94 @@
+{% extends "admin/base.html" %}
+{% block title %}Classrooms{% endblock %}
+
+{% block content %}
+<div class="card">
+  <h1>Classrooms</h1>
+  <p class="alert alert-note">
+    At a 10 metre radius the coordinates must be measured <em>inside the
+    room</em>. A map pin is not accurate enough &mdash; a 20 metre error will
+    reject the entire class. Stand in the centre, take several readings on a
+    phone, and use the average.
+  </p>
+</div>
+
+<div class="card">
+  <h2>Add a classroom</h2>
+  <form id="location-form" class="stack">
+    <label for="name">Name</label>
+    <input id="name" name="name" required placeholder="CS Block - Room 204">
+
+    <div class="row">
+      <div>
+        <label for="latitude">Latitude</label>
+        <input id="latitude" name="latitude" required placeholder="28.613900">
+      </div>
+      <div>
+        <label for="longitude">Longitude</label>
+        <input id="longitude" name="longitude" required placeholder="77.209000">
+      </div>
+      <div>
+        <label for="radius_meters">Radius (m)</label>
+        <input id="radius_meters" name="radius_meters" type="number" value="10">
+      </div>
+    </div>
+
+    <button type="button" id="use-my-location" class="btn btn-small">
+      Use my current location
+    </button>
+
+    <label for="allowed_networks">Allowed networks (comma separated)</label>
+    <input id="allowed_networks" name="allowed_networks"
+           placeholder="203.0.113.44, 192.168.0.0/16">
+    <p class="muted">
+      The address the classroom's traffic exits from. Leave blank only if you
+      have turned the network check off &mdash; an empty list fails closed.
+    </p>
+
+    <button class="btn btn-primary" type="submit">Add classroom</button>
+    <p id="location-message" class="muted"></p>
+  </form>
+</div>
+
+<div class="card">
+  <h2>Configured classrooms</h2>
+  {% if locations %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th><th>Latitude</th><th>Longitude</th>
+          <th>Radius</th><th>Networks</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for loc in locations %}
+        <tr>
+          <td>{{ loc.name }}</td>
+          <td>{{ '%.6f'|format(loc.latitude) }}</td>
+          <td>{{ '%.6f'|format(loc.longitude) }}</td>
+          <td>{{ loc.radius_meters }} m</td>
+          <td>
+            {% if loc.allowed_networks %}
+              <code>{{ loc.allowed_networks }}</code>
+            {% else %}
+              <span class="pill pill-rejected">none</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="muted">No classrooms configured yet.</p>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const LOCATIONS_URL = '{{ url_for("admin.create_location") }}';
+</script>
+<script src="{{ url_for('static', filename='js/admin_locations.js') }}"></script>
+{% endblock %}

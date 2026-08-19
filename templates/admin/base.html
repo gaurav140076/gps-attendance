@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block nav %}
+  <a class="nav-link" href="{{ url_for('pages.admin_dashboard') }}">Overview</a>
+  <a class="nav-link" href="{{ url_for('pages.admin_students') }}">Students</a>
+  <a class="nav-link" href="{{ url_for('pages.admin_teachers') }}">Teachers</a>
+  <a class="nav-link" href="{{ url_for('pages.admin_academic') }}">Academic</a>
+  <a class="nav-link" href="{{ url_for('pages.admin_locations') }}">Classrooms</a>
+  <a class="nav-link" href="{{ url_for('pages.admin_devices') }}">Devices</a>
+  <a class="nav-link" href="{{ url_for('pages.admin_reports') }}">Reports</a>
+  <a class="nav-link" href="{{ url_for('pages.admin_attempts') }}">Attempts</a>
+{% endblock %}

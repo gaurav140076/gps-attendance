@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Mark attendance{% endblock %}
+
+{% block nav %}
+  <a class="nav-link" href="{{ url_for('pages.student_dashboard') }}">Dashboard</a>
+  <a class="nav-link" href="{{ url_for('pages.student_history') }}">History</a>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+  <h1>Mark attendance</h1>
+  <div id="session-banner" class="muted">Loading session&hellip;</div>
+</div>
+
+<div class="card" id="scan-card">
+  <h2>1. Scan the code on the classroom screen</h2>
+
+  <div id="scanner-wrap" hidden>
+    <video id="scanner" playsinline muted></video>
+    <p class="muted">Point your camera at the code on the screen.</p>
+  </div>
+
+  <button id="start-scan" class="btn">Open camera</button>
+
+  <div class="divider"><span>or type the code shown under the QR</span></div>
+
+  <label for="manual-code">6-character code</label>
+  <input id="manual-code" maxlength="6" autocapitalize="characters"
+         autocomplete="off" spellcheck="false" placeholder="e.g. K7P2QM">
+
+  <p id="token-status" class="muted">No code captured yet.</p>
+</div>
+
+<div class="card">
+  <h2>2. Confirm your location</h2>
+  <p class="muted">
+    Your position is checked against a
+    <strong id="radius-label">10</strong> metre radius around the classroom.
+    Stay on the classroom Wi-Fi.
+  </p>
+  <p id="gps-status" class="muted">Location not requested yet.</p>
+  <button id="submit" class="btn btn-primary" disabled>Mark attendance</button>
+</div>
+
+<div id="result" class="card" hidden>
+  <h2 id="result-title"></h2>
+  <p id="result-message"></p>
+  <ul id="result-detail" class="checklist"></ul>
+  <a class="btn" href="{{ url_for('pages.student_dashboard') }}">Back to dashboard</a>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const SESSIONS_URL = '{{ url_for("student.open_sessions") }}';
+const MARK_URL = '{{ url_for("attendance.mark") }}';
+const MAX_ACCURACY = {{ config.MAX_ACCURACY_METERS }};
+</script>
+<script src="{{ url_for('static', filename='js/attendance.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends "admin/base.html" %}
+{% block title %}Refused attempts{% endblock %}
+
+{% block content %}
+<div class="card">
+  <h1>Refused attempts</h1>
+  <p class="alert alert-note">
+    This is the most privacy-sensitive view in the system: it records where
+    students were when they <em>failed</em>, including the ones who simply had
+    bad Wi-Fi. Use it to investigate disputes, and purge it on the retention
+    schedule in your institution's privacy notice.
+  </p>
+</div>
+
+<div class="card">
+  <div id="attempts"><p class="muted">Loading&hellip;</p></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const ATTEMPTS_URL = '{{ url_for("admin.list_attempts") }}';
+</script>
+<script src="{{ url_for('static', filename='js/admin_attempts.js') }}"></script>
+{% endblock %}

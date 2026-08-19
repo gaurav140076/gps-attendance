@@ -1,0 +1,68 @@
+{% extends "admin/base.html" %}
+{% block title %}Teachers{% endblock %}
+
+{% block content %}
+<div class="card">
+  <h1>Teachers</h1>
+  <p class="muted">
+    Teachers hold the attendance switch. Only the teacher who owns a session
+    can open its window.
+  </p>
+</div>
+
+<div class="card">
+  <h2>Add a teacher</h2>
+  <form id="teacher-form" class="stack">
+    <div class="row">
+      <div>
+        <label for="teacher_id">Teacher ID</label>
+        <input id="teacher_id" name="teacher_id" placeholder="TCH004"
+               autocapitalize="characters" spellcheck="false">
+      </div>
+      <div>
+        <label for="name">Full name</label>
+        <input id="name" name="name" required>
+      </div>
+    </div>
+
+    <div class="row">
+      <div>
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" required>
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" minlength="8" required>
+      </div>
+      <div>
+        <label for="department_id">Department</label>
+        <select id="department_id" name="department_id">
+          <option value="">&mdash;</option>
+          {% for d in departments %}<option value="{{ d.id }}">{{ d.name }}</option>{% endfor %}
+        </select>
+      </div>
+    </div>
+    <button class="btn btn-primary" type="submit">Add teacher</button>
+    <p class="muted">
+      Teacher ID is your institution's own staff code &mdash; the teacher
+      equivalent of a student's roll number. Leave it blank if you do not use
+      one; if you do, it must be unique.
+    </p>
+    <p id="teacher-message" class="muted"></p>
+  </form>
+</div>
+
+<div class="card">
+  <h2>All teachers</h2>
+  <div id="teachers"><p class="muted">Loading&hellip;</p></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const TEACHERS_URL = '{{ url_for("admin.list_teachers") }}';
+</script>
+<script src="{{ url_for('static', filename='js/admin_teachers.js') }}"></script>
+{% endblock %}

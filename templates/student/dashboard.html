@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - {{ student.name }}{% endblock %}
+
+{% block nav %}
+  <a class="nav-link" href="{{ url_for('pages.student_dashboard') }}">Dashboard</a>
+  <a class="nav-link" href="{{ url_for('pages.student_history') }}">History</a>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+  <h1>{{ student.name }}</h1>
+  <p class="muted">
+    Roll {{ student.roll_no }}
+    {% if student.class_group %} &middot; {{ student.class_group.name }}{% endif %}
+  </p>
+</div>
+
+{% if not device %}
+<div class="card">
+  <h2>Register this device</h2>
+  <p>
+    Your account must be bound to one phone before you can mark attendance.
+    Register the device you will actually carry to class -- changing it later
+    needs your teacher's approval.
+  </p>
+  <button id="register-device" class="btn btn-primary">Register this device</button>
+  <p id="device-message" class="muted"></p>
+</div>
+{% endif %}
+
+<div class="card">
+  <h2>Attendance</h2>
+  <div id="sessions">
+    <p class="muted">Checking for an open window&hellip;</p>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const SESSIONS_URL = '{{ url_for("student.open_sessions") }}';
+const MARK_PAGE = '{{ url_for("pages.student_attendance") }}';
+const REGISTER_URL = '{{ url_for("student.register_device") }}';
+</script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

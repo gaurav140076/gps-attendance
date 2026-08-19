@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block title %}{{ att_session.subject.name }} - session {{ att_session.id }}{% endblock %}
+
+{% block nav %}
+  <a class="nav-link" href="{{ url_for('pages.teacher_dashboard') }}">Sessions</a>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+  <h1>{{ att_session.subject.name }}</h1>
+  <p class="muted">
+    {{ att_session.class_group.name }} &middot; {{ att_session.location.name }}
+    &middot; {{ att_session.location.radius_meters }} m radius
+  </p>
+
+  <div class="window-panel">
+    <div>
+      <span class="label">Attendance window</span>
+      <span id="window-status" class="pill pill-{{ att_session.status|lower }}">
+        {{ att_session.status }}
+      </span>
+    </div>
+    <div id="countdown-wrap" hidden>
+      <span class="label">Closes in</span>
+      <span id="countdown" class="countdown">--:--</span>
+    </div>
+  </div>
+
+  <div class="anchor-panel">
+    <span class="label">Attendance area</span>
+    <label class="checkbox-row">
+      <input type="checkbox" id="use-my-location" checked>
+      <span>
+        Centre the {{ att_session.location.radius_meters }} m circle on
+        <strong>where I am standing</strong> when I open the window
+      </span>
+    </label>
+    <p class="muted">
+      You are in the room, so your position is the classroom. Unchecking
+      falls back to the saved coordinates for
+      {{ att_session.location.name }}.
+    </p>
+    <p id="anchor-status" class="muted">Location not read yet.</p>
+    <button type="button" id="check-location" class="btn btn-small">
+      Check my location now
+    </button>
+  </div>
+
+  <div class="window-actions">
+    <label for="window-seconds">Window length (seconds)</label>
+    <input id="window-seconds" type="number" min="10" max="300"
+           value="{{ att_session.window_seconds }}">
+    <button id="open-window" class="btn btn-primary">Open attendance</button>
+    <button id="close-window" class="btn btn-danger" hidden>Close attendance</button>
+  </div>
+  <p id="window-message" class="muted"></p>
+</div>
+
+<div class="card" id="qr-card" hidden>
+  <h2>Show this to the class</h2>
+  <div class="qr-panel">
+    <img id="qr-image" alt="Attendance QR code" width="260" height="260">
+    <div>
+      <span class="label">Or type this code</span>
+      <p id="display-code" class="display-code">------</p>
+      <p class="muted">The code changes every
+        {{ att_session.token_rotation_seconds }} seconds.</p>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>Live roster</h2>
+  <p id="roster-summary" class="muted">Loading&hellip;</p>
+  <div id="roster"></div>
+</div>
+
+<div class="card">
+  <h2>Refused attempts</h2>
+  <p class="muted">
+    A run of the same failure here is what a proxy attempt looks like.
+  </p>
+  <div id="failures"><p class="muted">None.</p></div>
+</div>
+
+<div class="card">
+  <a class="btn"
+     href="{{ url_for('teacher.export_session', session_id=att_session.id) }}">
+    Export CSV
+  </a>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const SESSION_ID = {{ att_session.id }};
+const OPEN_URL = '{{ url_for("teacher.open_window", session_id=att_session.id) }}';
+const CLOSE_URL = '{{ url_for("teacher.close_window", session_id=att_session.id) }}';
+const TOKEN_URL = '{{ url_for("teacher.current_token", session_id=att_session.id) }}';
+const QR_URL = '{{ url_for("teacher.token_qr", session_id=att_session.id) }}';
+const ROSTER_URL = '{{ url_for("teacher.session_attendance", session_id=att_session.id) }}';
+const OVERRIDE_URL = '{{ url_for("teacher.override", session_id=att_session.id) }}';
+const INITIAL_STATUS = '{{ att_session.status }}';
+const MAX_ANCHOR_ACCURACY = {{ config.MAX_ANCHOR_ACCURACY_METERS }};
+const RADIUS_METERS = {{ att_session.location.radius_meters }};
+</script>
+<script src="{{ url_for('static', filename='js/teacher_session.js') }}"></script>
+{% endblock %}

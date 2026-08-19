@@ -1,0 +1,71 @@
+{% extends "admin/base.html" %}
+{% block title %}Students{% endblock %}
+
+{% block content %}
+<div class="card">
+  <h1>Students</h1>
+  <p class="muted">
+    A student cannot mark attendance until they belong to a class and have
+    registered a device.
+  </p>
+</div>
+
+<div class="card">
+  <h2>Add a student</h2>
+  <form id="student-form" class="stack">
+    <div class="row">
+      <div>
+        <label for="name">Full name</label>
+        <input id="name" name="name" required>
+      </div>
+      <div>
+        <label for="roll_no">Roll number</label>
+        <input id="roll_no" name="roll_no" required>
+      </div>
+    </div>
+
+    <div class="row">
+      <div>
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" required>
+      </div>
+      <div>
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" minlength="8" required>
+      </div>
+    </div>
+
+    <div class="row">
+      <div>
+        <label for="class_id">Class</label>
+        <select id="class_id" name="class_id">
+          <option value="">&mdash;</option>
+          {% for c in classes %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}
+        </select>
+      </div>
+      <div>
+        <label for="department_id">Department</label>
+        <select id="department_id" name="department_id">
+          <option value="">&mdash;</option>
+          {% for d in departments %}<option value="{{ d.id }}">{{ d.name }}</option>{% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" type="submit">Add student</button>
+    <p id="student-message" class="muted"></p>
+  </form>
+</div>
+
+<div class="card">
+  <h2>All students</h2>
+  <div id="students"><p class="muted">Loading&hellip;</p></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const STUDENTS_URL = '{{ url_for("admin.list_students") }}';
+</script>
+<script src="{{ url_for('static', filename='js/admin_students.js') }}"></script>
+{% endblock %}

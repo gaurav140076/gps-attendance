@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}Attendance history{% endblock %}
+
+{% block nav %}
+  <a class="nav-link" href="{{ url_for('pages.student_dashboard') }}">Dashboard</a>
+  <a class="nav-link" href="{{ url_for('pages.student_history') }}">History</a>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+  <h1>Attendance history</h1>
+  <p class="big-stat">{{ overall }}%<span class="muted"> overall</span></p>
+</div>
+
+<div class="card">
+  <h2>By subject</h2>
+  {% if by_subject %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Subject</th><th>Present</th><th>Held</th><th>Percentage</th></tr>
+      </thead>
+      <tbody>
+        {% for row in by_subject %}
+        <tr>
+          <td>{{ row.subject }}</td>
+          <td>{{ row.present }}</td>
+          <td>{{ row.total }}</td>
+          <td>{{ row.percentage }}%</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="muted">No sessions have been held for your class yet.</p>
+  {% endif %}
+</div>
+
+<div class="card">
+  <h2>Records</h2>
+  {% if records %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th><th>Time</th><th>Subject</th>
+          <th>Status</th><th>Distance</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in records %}
+        <tr>
+          <td>{{ r.date.strftime('%d-%m-%Y') }}</td>
+          <td>{{ r.time.strftime('%H:%M') if r.time else '' }}</td>
+          <td>{{ r.session.subject.name }}</td>
+          <td>
+            <span class="pill pill-{{ r.status|lower }}">{{ r.status }}</span>
+            {% if r.is_override %}<span class="pill">manual</span>{% endif %}
+          </td>
+          <td>
+            {% if r.distance_meters is not none %}
+              {{ '%.1f'|format(r.distance_meters) }} m
+            {% else %}&mdash;{% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="muted">You have not marked attendance yet.</p>
+  {% endif %}
+</div>
+{% endblock %}

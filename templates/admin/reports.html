@@ -1,0 +1,38 @@
+{% extends "admin/base.html" %}
+{% block title %}Reports{% endblock %}
+
+{% block content %}
+<div class="card">
+  <h1>Reports</h1>
+  <p class="muted">
+    Reports show presence and percentages. Coordinates stay out of them
+    deliberately &mdash; a class list does not need a location history
+    attached, and the audit view is where that lives.
+  </p>
+</div>
+
+<div class="card">
+  <h2>Today</h2>
+  <div id="daily"><p class="muted">Loading&hellip;</p></div>
+</div>
+
+<div class="card">
+  <h2>Per student</h2>
+  <label for="student">Student</label>
+  <select id="student">
+    <option value="">Choose a student&hellip;</option>
+    {% for s in students %}
+      <option value="{{ s.id }}">{{ s.roll_no }} &mdash; {{ s.name }}</option>
+    {% endfor %}
+  </select>
+  <a id="export" class="btn" hidden>Export CSV</a>
+  <div id="student-report"></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const DAILY_URL = '{{ url_for("admin.daily") }}';
+</script>
+<script src="{{ url_for('static', filename='js/admin_reports.js') }}"></script>
+{% endblock %}

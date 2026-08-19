@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}GPS Self-Attendance{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="{{ url_for('pages.index') }}">GPS Self-Attendance</a>
+    {% if current_user %}
+      <nav class="nav">
+        {% block nav %}{% endblock %}
+        <a class="nav-link logout" href="{{ url_for('auth.logout') }}">Log out</a>
+      </nav>
+    {% endif %}
+  </header>
+
+  <main class="page">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="footer">
+    Attendance requires an open window, a live code, the classroom network,
+    and your registered device.
+  </footer>
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>

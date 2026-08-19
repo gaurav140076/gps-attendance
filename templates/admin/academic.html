@@ -1,0 +1,86 @@
+{% extends "admin/base.html" %}
+{% block title %}Departments, classes and subjects{% endblock %}
+
+{% block content %}
+<div class="card">
+  <h1>Academic structure</h1>
+  <p class="muted">
+    Sessions are created against a class and a subject, and only students in
+    that class may mark attendance. Anything already in use is protected from
+    deletion.
+  </p>
+</div>
+
+<div class="card">
+  <h2>Departments</h2>
+  <form id="dept-form" class="inline-form">
+    <input id="dept-name" name="name" placeholder="Computer Science" required>
+    <button class="btn btn-primary" type="submit">Add</button>
+  </form>
+  <p id="dept-message" class="muted"></p>
+  <div id="departments"></div>
+</div>
+
+<div class="card">
+  <h2>Classes</h2>
+  <form id="class-form" class="stack">
+    <div class="row">
+      <div>
+        <label for="class-name">Name</label>
+        <input id="class-name" name="name" placeholder="CSE 3A" required>
+      </div>
+      <div>
+        <label for="class-dept">Department</label>
+        <select id="class-dept" name="department_id">
+          <option value="">&mdash;</option>
+          {% for d in departments %}<option value="{{ d.id }}">{{ d.name }}</option>{% endfor %}
+        </select>
+      </div>
+      <div>
+        <label for="class-year">Year</label>
+        <input id="class-year" name="year" type="number" min="1" max="6" placeholder="3">
+      </div>
+      <div>
+        <label for="class-section">Section</label>
+        <input id="class-section" name="section" maxlength="10" placeholder="A">
+      </div>
+    </div>
+    <button class="btn btn-primary" type="submit">Add class</button>
+    <p id="class-message" class="muted"></p>
+  </form>
+  <div id="classes"></div>
+</div>
+
+<div class="card">
+  <h2>Subjects</h2>
+  <form id="subject-form" class="stack">
+    <div class="row">
+      <div>
+        <label for="subject-name">Name</label>
+        <input id="subject-name" name="name" placeholder="Data Structures" required>
+      </div>
+      <div>
+        <label for="subject-code">Code</label>
+        <input id="subject-code" name="code" placeholder="CS301">
+      </div>
+      <div>
+        <label for="subject-dept">Department</label>
+        <select id="subject-dept" name="department_id">
+          <option value="">&mdash;</option>
+          {% for d in departments %}<option value="{{ d.id }}">{{ d.name }}</option>{% endfor %}
+        </select>
+      </div>
+    </div>
+    <button class="btn btn-primary" type="submit">Add subject</button>
+    <p id="subject-message" class="muted"></p>
+  </form>
+  <div id="subjects"></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const CATALOG_URL = '{{ url_for("admin.catalog") }}';
+</script>
+<script src="{{ url_for('static', filename='js/admin_academic.js') }}"></script>
+{% endblock %}

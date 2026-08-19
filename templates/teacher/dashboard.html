@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Teacher dashboard{% endblock %}
+
+{% block nav %}
+  <a class="nav-link" href="{{ url_for('pages.teacher_dashboard') }}">Sessions</a>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+  <h1>{{ teacher.name }}</h1>
+  <p class="muted">
+    Creating a session does not let anyone mark attendance. Open the window
+    when you are ready, and the class has until it closes.
+  </p>
+</div>
+
+<div class="card">
+  <h2>New session</h2>
+  <form id="create-session" class="stack">
+    <label for="class_id">Class</label>
+    <select id="class_id" name="class_id" required>
+      {% for c in classes %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}
+    </select>
+
+    <label for="subject_id">Subject</label>
+    <select id="subject_id" name="subject_id" required>
+      {% for s in subjects %}
+        <option value="{{ s.id }}">{{ s.name }}{% if s.code %} ({{ s.code }}){% endif %}</option>
+      {% endfor %}
+    </select>
+
+    <label for="location_id">Classroom</label>
+    <select id="location_id" name="location_id" required>
+      {% for loc in locations %}
+        <option value="{{ loc.id }}">{{ loc.name }} &mdash; {{ loc.radius_meters }} m</option>
+      {% endfor %}
+    </select>
+
+    <button class="btn btn-primary" type="submit">Create session</button>
+    <p id="create-message" class="muted"></p>
+  </form>
+</div>
+
+<div class="card">
+  <h2>Your sessions</h2>
+  {% if sessions %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Subject</th><th>Class</th><th>Classroom</th><th>Status</th><th></th></tr>
+      </thead>
+      <tbody>
+        {% for s in sessions %}
+        <tr>
+          <td>{{ s.subject.name }}</td>
+          <td>{{ s.class_group.name }}</td>
+          <td>{{ s.location.name }}</td>
+          <td><span class="pill pill-{{ s.status|lower }}">{{ s.status }}</span></td>
+          <td>
+            <a class="btn btn-small"
+               href="{{ url_for('pages.teacher_session', session_id=s.id) }}">Open</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="muted">No sessions yet.</p>
+  {% endif %}
+</div>
+
+<div class="card">
+  <h2>Device change requests</h2>
+  <div id="device-requests"><p class="muted">Loading&hellip;</p></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const CREATE_URL = '{{ url_for("teacher.create_session") }}';
+const REQUESTS_URL = '{{ url_for("teacher.device_requests") }}';
+</script>
+<script src="{{ url_for('static', filename='js/teacher_dashboard.js') }}"></script>
+{% endblock %}

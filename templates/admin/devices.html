@@ -1,0 +1,29 @@
+{% extends "admin/base.html" %}
+{% block title %}Registered devices{% endblock %}
+
+{% block content %}
+<div class="card">
+  <h1>Registered devices</h1>
+  <p class="muted">
+    One account, one phone. Revoking a binding lets that student register a
+    new device on their next login &mdash; use it when somebody changes phone
+    or leaves.
+  </p>
+  <p class="alert alert-note">
+    Revocations are the escape hatch that keeps device binding workable. They
+    are also the way around it, so a student asking for a reset every few
+    weeks is worth a second look.
+  </p>
+</div>
+
+<div class="card">
+  <div id="devices"><p class="muted">Loading&hellip;</p></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const DEVICES_URL = '{{ url_for("admin.list_devices") }}';
+</script>
+<script src="{{ url_for('static', filename='js/admin_devices.js') }}"></script>
+{% endblock %}

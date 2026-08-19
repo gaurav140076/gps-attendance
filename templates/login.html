@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}Log in - GPS Self-Attendance{% endblock %}
+
+{% block content %}
+<div class="card card-narrow">
+  <h1>Log in</h1>
+
+  {% if error %}
+    <p class="alert alert-error">{{ error }}</p>
+  {% endif %}
+
+  <form method="post" action="{{ url_for('auth.login') }}">
+    <label for="role">I am a</label>
+    <select id="role" name="role">
+      <option value="STUDENT">Student</option>
+      <option value="TEACHER">Teacher</option>
+      <option value="ADMIN">Administrator</option>
+    </select>
+
+    <label for="email">Email</label>
+    <input id="email" name="email" type="email" required autocomplete="username">
+
+    <label for="password">Password</label>
+    <input id="password" name="password" type="password" required
+           autocomplete="current-password">
+
+    <button class="btn btn-primary" type="submit">Log in</button>
+  </form>
+</div>
+
+<details class="card card-narrow">
+  <summary>Register as a student</summary>
+  <form id="register-form" class="stack">
+    <label for="r-name">Full name</label>
+    <input id="r-name" name="name" required>
+
+    <label for="r-roll">Roll number</label>
+    <input id="r-roll" name="roll_no" required>
+
+    <label for="r-email">Email</label>
+    <input id="r-email" name="email" type="email" required>
+
+    <label for="r-class">Class</label>
+    <select id="r-class" name="class_id">
+      {% for c in classes %}
+        <option value="{{ c.id }}">{{ c.name }}</option>
+      {% endfor %}
+    </select>
+
+    <label for="r-password">Password (min 8 characters)</label>
+    <input id="r-password" name="password" type="password" minlength="8" required>
+
+    <button class="btn" type="submit">Create account</button>
+    <p id="register-message" class="muted"></p>
+  </form>
+</details>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('register-form').addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const form = event.target;
+  const body = Object.fromEntries(new FormData(form).entries());
+  const note = document.getElementById('register-message');
+  note.textContent = 'Creating account...';
+
+  const response = await fetch('{{ url_for("auth.register") }}', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  const data = await response.json();
+
+  if (data.success) {
+    window.location = data.redirect;
+  } else {
+    note.textContent = data.message || 'Could not create the account.';
+    note.className = 'alert alert-error';
+  }
+});
+</script>
+{% endblock %}
