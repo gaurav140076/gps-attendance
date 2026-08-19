@@ -34,10 +34,49 @@ def create_app(config_object=Config):
     _warn_on_weak_config(app)
 
     if app.config.get("AUTO_CREATE_TABLES"):
-        with app.app_context():
-            db.create_all()
+        _create_tables(app)
 
     return app
+
+
+# Arbitrary but fixed: every worker must ask for the same lock for the
+# lock to serialise anything.
+_SCHEMA_LOCK_KEY = 4187266401
+
+
+def _create_tables(app):
+    """Create missing tables, safely across concurrent workers.
+
+    ``create_all()`` checks whether each table exists and then creates
+    it, and those two steps are not atomic. Gunicorn boots several
+    workers at once, so they race: two workers both see a table missing,
+    both issue CREATE TABLE, and the loser dies with a duplicate-key
+    error on the Postgres system catalogue, taking the deployment down.
+
+    An advisory lock serialises the workers, so the first one through
+    creates the tables and the rest find them already present. SQLite is
+    single-process, so there is no race to prevent there.
+    """
+    from sqlalchemy import text
+
+    with app.app_context():
+        if db.engine.dialect.name != "postgresql":
+            db.create_all()
+            return
+
+        with db.engine.connect() as conn:
+            conn.execute(
+                text("SELECT pg_advisory_lock(:key)"), {"key": _SCHEMA_LOCK_KEY}
+            )
+            conn.commit()
+            try:
+                db.create_all()
+            finally:
+                conn.execute(
+                    text("SELECT pg_advisory_unlock(:key)"),
+                    {"key": _SCHEMA_LOCK_KEY},
+                )
+                conn.commit()
 
 
 def _register_context(app):
